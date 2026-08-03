@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import threading
 from typing import Callable
@@ -10,6 +11,13 @@ from .temp_utils import get_temp_directory
 from src.logger import get_logger
 
 logger = get_logger("PipelineDownloadWorkers")
+
+ANSI_ESCAPE_RE = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
+def clean_ansi(text: str) -> str:
+    if not text:
+        return ""
+    return ANSI_ESCAPE_RE.sub('', str(text)).strip()
 
 
 class VideoDownloadWorker(threading.Thread):
@@ -41,11 +49,15 @@ class VideoDownloadWorker(threading.Thread):
                 total = d.get('total_bytes') or d.get('total_bytes_estimate') or 0
                 downloaded = d.get('downloaded_bytes', 0)
                 percent = (downloaded / total * 100.0) if total > 0 else 0.0
-                speed = d.get('_speed_str', 'N/A')
-                eta = d.get('_eta_str', 'N/A')
+                speed = clean_ansi(d.get('_speed_str', 'N/A'))
+                eta = clean_ansi(d.get('_eta_str', 'N/A'))
                 self.job.video_progress = min(1.0, max(0.0, percent / 100.0))
                 self.job.video_speed = str(speed)
                 self.job.video_eta = str(eta)
+                if self.job.download_mode == "video_audio" and self.job.audio_progress < 1.0:
+                    self.job.status_msg = "Downloading Video & Audio Streams..."
+                else:
+                    self.job.status_msg = "Downloading Video Stream..."
                 self.on_progress("VIDEO_DOWNLOAD", title, percent, speed, eta)
             elif d['status'] == 'finished':
                 self.job.temp_video_path = d.get('filename')
@@ -56,6 +68,7 @@ class VideoDownloadWorker(threading.Thread):
                 logger.debug(f"[{self.job.job_id}] Video stream temp file saved: {self.job.temp_video_path}")
 
         ydl_opts = {
+            'nocolor': True,
             'quiet': True,
             'no_warnings': True,
             'outtmpl': out_template,
@@ -136,11 +149,15 @@ class AudioDownloadWorker(threading.Thread):
                 total = d.get('total_bytes') or d.get('total_bytes_estimate') or 0
                 downloaded = d.get('downloaded_bytes', 0)
                 percent = (downloaded / total * 100.0) if total > 0 else 0.0
-                speed = d.get('_speed_str', 'N/A')
-                eta = d.get('_eta_str', 'N/A')
+                speed = clean_ansi(d.get('_speed_str', 'N/A'))
+                eta = clean_ansi(d.get('_eta_str', 'N/A'))
                 self.job.audio_progress = min(1.0, max(0.0, percent / 100.0))
                 self.job.audio_speed = str(speed)
                 self.job.audio_eta = str(eta)
+                if self.job.download_mode == "video_audio" and self.job.video_progress < 1.0:
+                    self.job.status_msg = "Downloading Video & Audio Streams..."
+                else:
+                    self.job.status_msg = "Downloading Audio Stream..."
                 self.on_progress("AUDIO_DOWNLOAD", title, percent, speed, eta)
             elif d['status'] == 'finished':
                 self.job.temp_audio_path = d.get('filename')
@@ -151,6 +168,7 @@ class AudioDownloadWorker(threading.Thread):
                 logger.debug(f"[{self.job.job_id}] Audio stream temp file saved: {self.job.temp_audio_path}")
 
         ydl_opts = {
+            'nocolor': True,
             'quiet': True,
             'no_warnings': True,
             'outtmpl': out_template,

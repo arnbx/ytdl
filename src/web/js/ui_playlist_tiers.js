@@ -49,7 +49,7 @@ export function initSelectionChecklist(data, onAnalyzedCallback) {
       const progressFill = document.getElementById("playlist-analyze-progress-fill");
       const progressText = document.getElementById("playlist-analyze-progress-text");
       if (progressWrap) progressWrap.classList.remove("hidden");
-      if (progressFill) progressFill.style.width = "10%";
+      if (progressFill) progressFill.style.width = "0%";
       if (progressText) progressText.textContent = `Analyzing ${selectedIndices.length} videos...`;
 
       try {
