@@ -1,0 +1,303 @@
+name: Build YTDL
+
+# ── Triggers ──────────────────────────────────────────────────────────────────
+# Builds run on every version tag push (e.g. v1.0.0) or manual trigger.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+# ── Permissions ───────────────────────────────────────────────────────────────
+permissions:
+  contents: write   # needed to create GitHub Releases and upload assets
+
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  LINUX BUILD  (Ubuntu 22.04 — widest glibc compatibility)       ║
+# ╚══════════════════════════════════════════════════════════════════╝
+  build-linux:
+    name: Build — Linux (x86_64)
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── System dependencies for PyWebView (WebKit2GTK) ──────────────
+      - name: Install system WebKit2GTK & GObject dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            python3-gi \
+            python3-gi-cairo \
+            gir1.2-gtk-3.0 \
+            gir1.2-webkit2-4.0 \
+            libwebkit2gtk-4.0-dev \
+            libgirepository1.0-dev \
+            pkg-config \
+            libcairo2-dev \
+            xvfb
+
+      # ── Python setup ─────────────────────────────────────────────────
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      # ── Run unit tests before building ──────────────────────────────
+      - name: Run test suite
+        run: python -m unittest discover -s test -p "test_html_dom.py" -v
+
+      # ── Build with PyInstaller ───────────────────────────────────────
+      - name: Build with PyInstaller
+        run: pyinstaller ytdl.spec --clean --noconfirm
+
+      # ── Package as tar.gz ────────────────────────────────────────────
+      - name: Package dist folder
+        run: |
+          cd dist
+          tar -czf ../YTDL-linux-x86_64.tar.gz YTDL/
+          cd ..
+          echo "Built: YTDL-linux-x86_64.tar.gz"
+          ls -lh YTDL-linux-x86_64.tar.gz
+
+      # ── Upload artifact for use in release job ───────────────────────
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YTDL-linux-x86_64
+          path: YTDL-linux-x86_64.tar.gz
+          retention-days: 7
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  WINDOWS BUILD                                                   ║
+# ╚══════════════════════════════════════════════════════════════════╝
+  build-windows:
+    name: Build — Windows (x86_64)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Python setup ─────────────────────────────────────────────────
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pywebview[winforms]
+
+      # ── Run unit tests before building ──────────────────────────────
+      - name: Run test suite
+        run: python -m unittest discover -s test -p "test_html_dom.py" -v
+
+      # ── Build with PyInstaller ───────────────────────────────────────
+      - name: Build with PyInstaller
+        run: pyinstaller ytdl.spec --clean --noconfirm
+
+      # ── Package as zip ───────────────────────────────────────────────
+      - name: Package dist folder
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist\YTDL\* -DestinationPath YTDL-windows-x86_64.zip
+          Write-Host "Built: YTDL-windows-x86_64.zip"
+          Get-Item YTDL-windows-x86_64.zip | Select-Object Name, Length
+
+      # ── Upload artifact ──────────────────────────────────────────────
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YTDL-windows-x86_64
+          path: YTDL-windows-x86_64.zip
+          retention-days: 7
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  macOS BUILD  (Apple Silicon + Intel via universal runner)       ║
+# ╚══════════════════════════════════════════════════════════════════╝
+  build-macos:
+    name: Build — macOS (arm64)
+    runs-on: macos-latest     # Apple Silicon (M-series) runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Python setup ─────────────────────────────────────────────────
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pywebview[cocoa]
+
+      # ── Run unit tests before building ──────────────────────────────
+      - name: Run test suite
+        run: python -m unittest discover -s test -p "test_html_dom.py" -v
+
+      # ── Build with PyInstaller ───────────────────────────────────────
+      - name: Build with PyInstaller
+        run: pyinstaller ytdl.spec --clean --noconfirm
+
+      # ── Package as DMG ────────────────────────────────────────────────
+      - name: Create DMG
+        run: |
+          # Create a simple DMG using hdiutil (built into macOS)
+          hdiutil create \
+            -volname "YTDL" \
+            -srcfolder dist/YTDL.app \
+            -ov \
+            -format UDZO \
+            YTDL-macos-arm64.dmg
+          echo "Built: YTDL-macos-arm64.dmg"
+          ls -lh YTDL-macos-arm64.dmg
+
+      # ── Upload artifact ──────────────────────────────────────────────
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YTDL-macos-arm64
+          path: YTDL-macos-arm64.dmg
+          retention-days: 7
+
+  # Also build Intel macOS for compatibility
+  build-macos-intel:
+    name: Build — macOS (x86_64 Intel)
+    runs-on: macos-13     # Last Intel-based macOS runner on GitHub
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pywebview[cocoa]
+
+      - name: Run test suite
+        run: python -m unittest discover -s test -p "test_html_dom.py" -v
+
+      - name: Build with PyInstaller
+        run: pyinstaller ytdl.spec --clean --noconfirm
+
+      - name: Create DMG
+        run: |
+          hdiutil create \
+            -volname "YTDL" \
+            -srcfolder dist/YTDL.app \
+            -ov \
+            -format UDZO \
+            YTDL-macos-x86_64.dmg
+          ls -lh YTDL-macos-x86_64.dmg
+
+      - name: Upload macOS Intel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YTDL-macos-x86_64
+          path: YTDL-macos-x86_64.dmg
+          retention-days: 7
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  GITHUB RELEASE  (runs after all builds succeed)                 ║
+# ╚══════════════════════════════════════════════════════════════════╝
+  release:
+    name: Create GitHub Release
+    needs: [build-linux, build-windows, build-macos, build-macos-intel]
+    runs-on: ubuntu-latest
+    # Only create a release when triggered by a tag push
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets/
+
+      - name: List downloaded assets
+        run: find release-assets/ -type f | sort
+
+      # ── Generate SHA256 checksums for all release files ──────────────
+      - name: Generate checksums
+        run: |
+          cd release-assets
+          find . -type f | sort | while read f; do
+            sha256sum "$f" >> ../SHA256SUMS.txt
+          done
+          cat ../SHA256SUMS.txt
+
+      # ── Create GitHub Release and upload all files ───────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "YTDL ${{ github.ref_name }}"
+          body: |
+            ## YTDL ${{ github.ref_name }}
+
+            High Quality YouTube Video Downloader — cross-platform desktop app.
+
+            ### Downloads
+
+            | Platform | File | Notes |
+            |---|---|---|
+            | Linux (x86_64) | `YTDL-linux-x86_64.tar.gz` | Requires `libwebkit2gtk-4.0` — see below |
+            | Windows (x86_64) | `YTDL-windows-x86_64.zip` | Windows 10/11, WebView2 built-in |
+            | macOS (Apple Silicon) | `YTDL-macos-arm64.dmg` | M1/M2/M3, macOS 12+ |
+            | macOS (Intel) | `YTDL-macos-x86_64.dmg` | Intel Macs, macOS 11+ |
+
+            ### Linux Installation
+            Install the one required system dependency before running:
+            ```bash
+            # Ubuntu/Debian
+            sudo apt install libwebkit2gtk-4.0-dev
+
+            # Arch Linux
+            sudo pacman -S webkit2gtk
+
+            # Fedora/RedHat
+            sudo dnf install webkit2gtk3
+
+            # Then extract and run:
+            tar -xzf YTDL-linux-x86_64.tar.gz
+            ./YTDL/YTDL
+            ```
+
+            ### SHA256 Checksums
+            See `SHA256SUMS.txt` attached below.
+
+          draft: false
+          prerelease: false
+          files: |
+            release-assets/**/*
+            SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
