@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YTDL — High Quality YouTube Video Downloader</title>
+  <meta name="description" content="YTDL is a High Quality YouTube Video Downloader with dynamic playlist grouping.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/reset.css?v=2">
+  <link rel="stylesheet" href="css/layout.css?v=2">
+  <link rel="stylesheet" href="css/buttons.css?v=2">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/extract.css?v=2">
+  <link rel="stylesheet" href="css/playlist.css?v=2">
+  <link rel="stylesheet" href="css/playlist_selection.css?v=2">
+  <link rel="stylesheet" href="css/queue.css?v=2">
+</head>
+
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-cyan"></div>
+    <div class="glow-orb orb-violet"></div>
+  </div>
+
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <h1>YTDL <span class="badge-version">v2.0</span></h1>
+      </div>
+      <div class="header-actions">
+        <button id="btn-open-folder" class="btn-secondary" title="Open Downloads Folder">
+          <span class="btn-icon">📁</span> Open Downloads
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- HERO SECTION: URL Input -->
+    <section class="hero-section" id="hero-section">
+      <div class="hero-card glass-panel">
+        <h2 class="hero-title">Extract & Download Media</h2>
+        <p class="hero-subtitle">Paste any YouTube Video or Playlist URL to begin instant multi-stream extraction.</p>
+
+        <form id="form-extract" class="extract-form" onsubmit="return false;" novalidate>
+          <div class="input-wrapper">
+            <span class="input-icon">🔗</span>
+            <input type="text" id="input-url" class="url-input" placeholder="https://www.youtube.com/watch?v=..."
+              autocomplete="off" />
+          </div>
+          <button type="button" id="btn-extract" class="btn-primary">
+            <span id="extract-spinner" class="spinner hidden"></span>
+            <span id="extract-label">Analyze Stream</span>
+          </button>
+        </form>
+        <div id="extract-error" class="error-banner hidden"></div>
+      </div>
+    </section>
+
+    <!-- MEDIA CONTENT SECTION: Single Video OR Playlist -->
+    <section class="content-section hidden" id="content-section">
+      <!-- SINGLE VIDEO CONTAINER -->
+      <div id="single-video-container" class="media-container glass-panel hidden">
+        <div class="media-header">
+          <div class="thumb-wrapper">
+            <img id="single-thumb" class="video-thumb" src="" alt="Video Thumbnail" />
+            <span id="single-duration" class="duration-badge">00:00</span>
+          </div>
+          <div class="media-info">
+            <h3 id="single-title" class="media-title">Video Title</h3>
+            <p class="media-meta">Select download format and quality streams below.</p>
+          </div>
+        </div>
+
+        <div class="media-controls">
+          <div class="control-group">
+            <label class="control-label">Download Mode</label>
+            <div class="mode-pills" id="single-mode-pills">
+              <button type="button" class="mode-pill active" data-mode="video_audio">Video + Audio (.MP4)</button>
+              <button type="button" class="mode-pill" data-mode="video_only">Video Only (Muted)</button>
+              <button type="button" class="mode-pill" data-mode="audio_only">Audio Only (.MP3)</button>
+            </div>
+          </div>
+
+          <div class="streams-row">
+            <div class="stream-col" id="col-single-video-stream">
+              <label class="control-label" for="select-single-video">Video Stream Quality</label>
+              <select id="select-single-video" class="stream-select"></select>
+            </div>
+            <div class="stream-col" id="col-single-audio-stream">
+              <label class="control-label" for="select-single-audio">Audio Stream Quality</label>
+              <select id="select-single-audio" class="stream-select"></select>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button id="btn-single-download" class="btn-primary btn-large">
+              <span class="btn-icon">⬇</span> Start Download Job
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAYLIST CONTAINER -->
+      <div id="playlist-container" class="media-container glass-panel hidden">
+        <div class="media-header">
+          <div class="media-info">
+            <div class="playlist-title-row">
+              <span class="badge-playlist">PLAYLIST</span>
+              <h3 id="playlist-title" class="media-title">Playlist Title</h3>
+            </div>
+            <p id="playlist-meta" class="media-meta">0 videos loaded</p>
+          </div>
+          <div class="playlist-global-toggle">
+            <label class="switch-label" for="toggle-batch-mode">
+              <input type="checkbox" id="toggle-batch-mode" checked />
+              <span class="switch-slider"></span>
+              <span class="switch-text">Apply same quality to all playlist videos</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TWO-STEP VIDEO SELECTION CHECKLIST -->
+        <div id="playlist-selection-section" class="playlist-selection-container">
+          <div class="selection-actions">
+            <button type="button" id="btn-select-all" class="btn-secondary">✓ Select All</button>
+            <button type="button" id="btn-deselect-all" class="btn-secondary">✕ Deselect All</button>
+            <button type="button" id="btn-invert-select" class="btn-secondary">⇄ Invert Selection</button>
+          </div>
+          <div id="playlist-selection-grid" class="playlist-selection-grid"></div>
+          <div id="playlist-analyze-progress-wrapper" class="progress-wrapper hidden" style="margin-top: 14px;">
+            <div class="progress-info">
+              <span id="playlist-analyze-progress-text">Analyzing selected videos...</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="playlist-analyze-progress-fill" class="progress-bar-fill"></div>
+            </div>
+          </div>
+          <button id="btn-analyze-selected" class="btn-primary btn-large" style="margin-top: 14px;">
+            <span class="btn-icon">⚡</span> Analyze Selected Videos
+          </button>
+        </div>
+
+        <!-- BATCH CONTROLS (when toggle is ON) -->
+        <div id="playlist-batch-controls" class="playlist-batch-box hidden">
+          <div class="control-group">
+            <label class="control-label">Batch Download Mode</label>
+            <div class="mode-pills" id="playlist-mode-pills">
+              <button type="button" class="mode-pill active" data-mode="video_audio">Video + Audio (.MP4)</button>
+              <button type="button" class="mode-pill" data-mode="video_only">Video Only (Muted)</button>
+              <button type="button" class="mode-pill" data-mode="audio_only">Audio Only (.MP3)</button>
+            </div>
+          </div>
+
+          <!-- LOGICAL BATCH GROUPS PREVIEW -->
+          <div class="groups-preview-section" style="margin-top: 18px;">
+            <label class="control-label">Playlist Quality Grouping Preview & Tiers</label>
+            <div id="groups-preview-container" class="groups-list"></div>
+          </div>
+
+          <div class="action-row" style="margin-top: 24px;">
+            <button id="btn-playlist-batch-download" class="btn-primary btn-large">
+              <span class="btn-icon">🚀</span> Start Batch Download Queue
+            </button>
+          </div>
+        </div>
+
+        <!-- INDIVIDUAL VIDEO CARDS GRID (when toggle is OFF) -->
+        <div id="playlist-individual-controls" class="playlist-individual-box hidden">
+          <div class="individual-header"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 12px 0;">
+            <label class="control-label" style="font-size: 1rem;">Customize Each Playlist Video</label>
+            <button id="btn-playlist-indiv-download" class="btn-primary" style="padding: 12px 24px; font-size: 1rem;">
+              <span class="btn-icon">🚀</span> Start Selected Videos Download
+            </button>
+          </div>
+          <div id="individual-cards-grid" class="cards-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MULTITASKED QUEUE DASHBOARD -->
+    <section class="queue-section" id="queue-section">
+      <div class="queue-card glass-panel">
+        <div class="queue-header">
+          <h2 class="queue-title">Download Queue & Progress</h2>
+          <span id="queue-status-badge" class="badge-status">IDLE</span>
+        </div>
+
+        <div id="queue-list" class="queue-list">
+          <div class="empty-queue-msg">
+            <span class="empty-icon">📂</span>
+            <p>No active download jobs. Extract a media URL above to start downloading.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>YTDL v2.0 &bull; Developed by Arnab Bose &bull; High Quality YouTube Video Downloader</p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

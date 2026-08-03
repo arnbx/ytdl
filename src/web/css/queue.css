@@ -1,0 +1,124 @@
+/* Queue Section */
+.queue-card {
+  padding: 32px;
+}
+
+.queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.queue-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.badge-status {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.badge-status.active {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-yellow);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+}
+
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty-queue-msg {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* Queue Job Cards */
+.job-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.job-card.active {
+  border-color: rgba(0, 206, 201, 0.4);
+}
+
+.job-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.job-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.job-mode-badge {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+
+/* 4-Stage Pills in Job Card */
+.stages-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.stage-pill {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.stage-pill.active {
+  background: rgba(0, 206, 201, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 206, 201, 0.2);
+}
+
+.stage-pill.done {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+@media (max-width: 768px) {
+  .stages-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
