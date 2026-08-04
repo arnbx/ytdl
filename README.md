@@ -62,7 +62,13 @@ For a seamless, ready-to-use experience without installing Python or any system 
 | :--- | :--- | :--- | :--- |
 | **Linux** | `YTDL-linux-x86_64.AppImage` | Standalone AppImage | Download, grant execution permissions (`chmod +x YTDL-linux-x86_64.AppImage`), and double-click or run from terminal. |
 | **Windows** | `YTDL-windows-x86_64-setup.exe` | Windows Setup Installer | Download and run the setup wizard to install YTDL to your **Windows Start Menu** and **Program Files**. |
-| **macOS** | `YTDL-macos-arm64.dmg` | Drag-to-Applications Disk Image | Download `YTDL-macos-arm64.dmg`, open it, drag **YTDL.app** onto the **Applications** folder shortcut, and launch from Launchpad or Spotlight. |
+| **macOS** | `YTDL-macos-arm64.dmg` | Drag-to-Applications Disk Image | 1. Download `YTDL-macos-arm64.dmg`, open it, and drag **YTDL.app** onto the **Applications** folder shortcut.<br>2. To allow the app to run without Gatekeeper warnings, open **Terminal** and run:<br>`xattr -dr com.apple.quarantine /Applications/YTDL.app`<br>3. Launch from Launchpad or Spotlight. |
+
+> [!IMPORTANT]
+> **macOS Gatekeeper Notice**: Because YTDL is distributed outside the Apple App Store without a paid Apple Developer certificate, macOS may display a *"YTDL.app is damaged and can't be opened"* warning on first launch. To clear the Apple quarantine attribute and run the app, open **Terminal** and execute:
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/YTDL.app
+> ```
 
 ---
 

@@ -305,6 +305,14 @@ jobs:
 
             > **Intel Mac users:** The arm64 DMG runs on Intel Macs via macOS Rosetta 2 (enabled by default on macOS 11+). No separate Intel build is provided as GitHub no longer offers Intel macOS runners.
 
+            ### macOS Installation & Gatekeeper Notice
+            1. Open `YTDL-macos-arm64.dmg` and drag **YTDL.app** into your **Applications** folder shortcut.
+            2. To clear Apple Gatekeeper's quarantine attribute (if macOS shows an *"app is damaged or cannot be opened"* alert on first launch), open **Terminal** and run:
+            ```bash
+            xattr -dr com.apple.quarantine /Applications/YTDL.app
+            ```
+            3. Launch **YTDL** from Launchpad or Spotlight.
+
             ### Linux Installation
             Ensure system WebKit2GTK is installed (standard on most desktop Linux distributions), then make the AppImage executable and run:
             ```bash
