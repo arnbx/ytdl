@@ -65,10 +65,6 @@
   gap: 12px;
 }
 
-.logo-icon {
-  font-size: 1.8rem;
-}
-
 .logo h1 {
   font-family: var(--font-heading);
   font-size: 1.5rem;
@@ -76,17 +72,31 @@
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.badge-version {
+.logo-github-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: transform 0.2s ease, opacity 0.2s ease, color 0.2s ease;
+  opacity: 0.9;
+}
+
+.logo-github-link:hover {
+  transform: scale(1.1);
+  opacity: 1;
+  color: var(--accent-cyan);
+}
+
+.author-subtitle {
   font-size: 0.75rem;
   font-family: var(--font-main);
-  background: var(--gradient-accent);
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--text-muted, #94a3b8);
+  letter-spacing: 0.5px;
+  margin-left: 2px;
 }
 
 /* Main Container */

@@ -93,6 +93,7 @@ async def analyze_selected_playlist(req: AnalyzeSelectedRequest, request: Reques
     import yt_dlp
     from src.backend.ffmpeg_locator import get_ffmpeg_path
     from src.backend.extractor.stream_parser import extract_video_metadata
+    from src.backend.websocket_manager import broadcast_extract_progress
     
     full_opts = {
         'quiet': True,
@@ -105,11 +106,12 @@ async def analyze_selected_playlist(req: AnalyzeSelectedRequest, request: Reques
     total_sel = len(selected_videos)
     with yt_dlp.YoutubeDL(full_opts) as ydl_full:
         for idx, v in enumerate(selected_videos):
-            pct = int(((idx + 1) / total_sel) * 100)
-            _on_extract_progress(f"Analyzed {idx + 1}/{total_sel} videos ({pct}%)", idx + 1, total_sel)
+            pct_before = int((idx / total_sel) * 100)
+            await broadcast_extract_progress(f"Analyzing {idx + 1} of {total_sel} videos ({pct_before}%)...", idx, total_sel)
+            await asyncio.sleep(0)
             if not v.video_streams and not v.audio_streams and v.url:
                 try:
-                    full_entry = ydl_full.extract_info(v.url, download=False)
+                    full_entry = await asyncio.to_thread(ydl_full.extract_info, v.url, False)
                     if full_entry:
                         vm = extract_video_metadata(full_entry)
                         v.video_streams = vm.video_streams
@@ -122,6 +124,9 @@ async def analyze_selected_playlist(req: AnalyzeSelectedRequest, request: Reques
                             v.thumbnail_url = vm.thumbnail_url
                 except Exception as e:
                     logger.warning(f"Error analyzing selected stream '{v.title}': {e}")
+            pct_after = int(((idx + 1) / total_sel) * 100)
+            await broadcast_extract_progress(f"Analyzed {idx + 1}/{total_sel} videos ({pct_after}%)", idx + 1, total_sel)
+            await asyncio.sleep(0)
     
     state.current_videos = selected_videos
     request.app.state.current_videos = selected_videos

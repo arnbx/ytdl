@@ -80,6 +80,15 @@ export async function apiOpenFolder() {
   return await resp.json();
 }
 
+export async function apiOpenUrl(url) {
+  const resp = await fetch("/api/open_url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url })
+  });
+  return await resp.json();
+}
+
 export async function apiFetchQueueState() {
   const resp = await fetch("/api/queue");
   if (!resp.ok) return { jobs: [] };

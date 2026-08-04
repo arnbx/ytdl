@@ -15,10 +15,26 @@ venv.bak/
 
 # Project Specific Output, Media, and Downloads
 downloads/
+ytdl/
+Downloads/ytdl/
 .temp_build/
 *.part
 *.ytdl
 *.temp
+
+# PyInstaller & Cross-Platform Packaging Artifacts
+build/
+dist/
+YTDL.AppDir/
+dmg_stage/
+release-assets/
+*.AppImage
+*.dmg
+*.exe
+*-setup.exe
+*.pkg
+*.spec.bak
+*.iss.bak
 
 # Log files
 logs/

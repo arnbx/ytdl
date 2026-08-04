@@ -1,6 +1,6 @@
 // Main Coordinator for YTDL Web Client Application v2.0
 import { state, setSingleMode, setPlaylistBatchMode } from "./state.js";
-import { apiOpenFolder, apiFetchQueueState } from "./api.js";
+import { apiOpenFolder, apiOpenUrl, apiFetchQueueState } from "./api.js";
 import { initWebSocket } from "./websocket.js";
 import { handleExtract, updateSingleStreamDropdownVisibility, handleSingleDownload } from "./ui_extract.js";
 import { updatePlaylistBatchVisibility, refreshPlaylistGroupsPreview, renderIndividualCardsGrid, handlePlaylistDownload } from "./ui_playlist.js";
@@ -13,6 +13,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initEventListeners() {
+  // GitHub Logo Link (open in external system browser)
+  const ghLink = document.getElementById("logo-github-link");
+  if (ghLink) {
+    ghLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const url = ghLink.getAttribute("href");
+      try {
+        await apiOpenUrl(url);
+      } catch (err) {
+        window.open(url, "_blank");
+      }
+    });
+  }
+
   // Extract Button
   document.getElementById("btn-extract").addEventListener("click", handleExtract);
   document.getElementById("input-url").addEventListener("keypress", (e) => {

@@ -1,5 +1,17 @@
 // Queue Dashboard Handler for YTDL
 
+function stripAnsi(str) {
+  if (!str) return "—";
+  return String(str).replace(/\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])/g, "").trim() || "—";
+}
+
+function isJobDone(job) {
+  if (!job) return true;
+  const s = String(job.stage || "").toUpperCase();
+  const m = String(job.status_msg || "").toUpperCase();
+  return s === "COMPLETED" || s === "FAILED" || s === "CANCELLED" || m === "COMPLETED";
+}
+
 export function renderQueueDashboard(jobs) {
   const listEl = document.getElementById("queue-list");
   const badgeEl = document.getElementById("queue-status-badge");
@@ -16,7 +28,7 @@ export function renderQueueDashboard(jobs) {
     return;
   }
 
-  const activeJobs = jobs.filter(j => j.stage !== "Completed" && j.stage !== "Failed" && j.stage !== "Cancelled");
+  const activeJobs = jobs.filter(j => !isJobDone(j));
   if (activeJobs.length > 0) {
     badgeEl.textContent = `ACTIVE (${activeJobs.length})`;
     badgeEl.classList.add("active");
@@ -45,39 +57,69 @@ export function renderQueueDashboard(jobs) {
       card.classList.add("active");
     }
 
-    const isVideoDone = job.video_progress >= 1.0 || isMergeStage || isConvertStage || isCompletedStage;
-    const isAudioDone = job.audio_progress >= 1.0 || isMergeStage || isConvertStage || isCompletedStage;
-    const isMergeDone = job.merge_progress >= 1.0 || isConvertStage || isCompletedStage;
-    const isConvertDone = job.convert_progress >= 1.0 || isCompletedStage;
+    const isVideoDone = (job.video_progress >= 1.0) || isMergeStage || isConvertStage || isCompletedStage;
+    const isAudioDone = (job.audio_progress >= 1.0) || isMergeStage || isConvertStage || isCompletedStage;
+    const isMergeDone = (job.merge_progress >= 1.0) || isConvertStage || isCompletedStage;
+    const isConvertDone = (job.convert_progress >= 1.0) || isCompletedStage;
+
+    const isVideoActive = !isVideoDone && (job.download_mode !== "audio_only") && (isVideoStage || isAudioStage || (job.video_progress > 0 && job.video_progress < 1.0));
+    const isAudioActive = !isAudioDone && (job.download_mode !== "video_only") && (isAudioStage || isVideoStage || (job.audio_progress > 0 && job.audio_progress < 1.0));
+    const isMergeActive = !isMergeDone && isMergeStage;
+    const isConvertActive = !isConvertDone && isConvertStage;
 
     let overallProg = 0;
     let speedStr = "—";
     let etaStr = "—";
 
-    if (isVideoStage) {
-      overallProg = job.video_progress * 45;
-      speedStr = job.video_speed || "—";
-      etaStr = job.video_eta || "—";
-    } else if (isAudioStage) {
-      overallProg = 45 + (job.audio_progress * 45);
-      speedStr = job.audio_speed || "—";
-      etaStr = job.audio_eta || "—";
-    } else if (isMergeStage) {
-      overallProg = 90 + (job.merge_progress * 5);
-      speedStr = "Fast Mux";
-      etaStr = "00:02";
-    } else if (isConvertStage) {
-      overallProg = 95 + (job.convert_progress * 5);
-      speedStr = "FFmpeg";
-      etaStr = "00:05";
-    } else if (isCompletedStage) {
+    if (isCompletedStage) {
       overallProg = 100;
       speedStr = "Done";
       etaStr = "00:00";
+    } else if (job.download_mode === "audio_only") {
+      if (isConvertStage) {
+        overallProg = 50 + ((job.convert_progress || 0) * 50);
+        speedStr = "FFmpeg";
+        etaStr = "00:05";
+      } else {
+        overallProg = (job.audio_progress || 0) * 50;
+        speedStr = stripAnsi(job.audio_speed);
+        etaStr = stripAnsi(job.audio_eta);
+      }
+    } else if (job.download_mode === "video_only") {
+      if (isConvertStage) {
+        overallProg = 50 + ((job.convert_progress || 0) * 50);
+        speedStr = "FFmpeg";
+        etaStr = "00:05";
+      } else {
+        overallProg = (job.video_progress || 0) * 50;
+        speedStr = stripAnsi(job.video_speed);
+        etaStr = stripAnsi(job.video_eta);
+      }
     } else {
-      overallProg = 0;
-      speedStr = job.stage || "—";
-      etaStr = "—";
+      // 4 divisions (25, 25, 25, 25): Audio 25%, Video 25% (total 50% when both finish), Merging 25%, Converting 25%
+      const vidContrib = (job.video_progress || 0) * 25;
+      const audContrib = (job.audio_progress || 0) * 25;
+      if (isMergeStage) {
+        overallProg = 50 + ((job.merge_progress || 0) * 25);
+        speedStr = "Fast Mux";
+        etaStr = "00:02";
+      } else if (isConvertStage) {
+        overallProg = 75 + ((job.convert_progress || 0) * 25);
+        speedStr = "FFmpeg";
+        etaStr = "00:05";
+      } else {
+        overallProg = vidContrib + audContrib;
+        if (isVideoStage && !isVideoDone) {
+          speedStr = stripAnsi(job.video_speed);
+          etaStr = stripAnsi(job.video_eta);
+        } else if (isAudioStage && !isAudioDone) {
+          speedStr = stripAnsi(job.audio_speed);
+          etaStr = stripAnsi(job.audio_eta);
+        } else {
+          speedStr = stripAnsi(job.video_speed || job.audio_speed);
+          etaStr = stripAnsi(job.video_eta || job.audio_eta);
+        }
+      }
     }
 
     card.innerHTML = `
@@ -87,16 +129,16 @@ export function renderQueueDashboard(jobs) {
       </div>
 
       <div class="stages-row">
-        <div class="stage-pill ${isVideoStage ? 'active' : ''} ${isVideoDone ? 'done' : ''}">
+        <div class="stage-pill ${isVideoActive ? 'active' : ''} ${isVideoDone ? 'done' : ''}">
           Stage 1: Video (${Math.round(job.video_progress * 100)}%)
         </div>
-        <div class="stage-pill ${isAudioStage ? 'active' : ''} ${isAudioDone ? 'done' : ''}">
+        <div class="stage-pill ${isAudioActive ? 'active' : ''} ${isAudioDone ? 'done' : ''}">
           Stage 2: Audio (${Math.round(job.audio_progress * 100)}%)
         </div>
-        <div class="stage-pill ${isMergeStage ? 'active' : ''} ${isMergeDone ? 'done' : ''}">
+        <div class="stage-pill ${isMergeActive ? 'active' : ''} ${isMergeDone ? 'done' : ''}">
           Stage 3: Merge (${Math.round(job.merge_progress * 100)}%)
         </div>
-        <div class="stage-pill ${isConvertStage ? 'active' : ''} ${isConvertDone ? 'done' : ''}">
+        <div class="stage-pill ${isConvertActive ? 'active' : ''} ${isConvertDone ? 'done' : ''}">
           Stage 4: Convert (${Math.round(job.convert_progress * 100)}%)
         </div>
       </div>

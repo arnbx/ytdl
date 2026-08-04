@@ -1,3 +1,4 @@
+import os
 import asyncio
 from typing import List
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -73,6 +74,12 @@ def _on_pipeline_progress(*args, **kwargs):
 
 @router.websocket("/ws/progress")
 async def ws_progress(websocket: WebSocket):
+    expected_token = os.environ.get("YTDL_APP_TOKEN")
+    if expected_token:
+        cookie_token = websocket.cookies.get("ytdl_token")
+        if cookie_token != expected_token:
+            await websocket.close(code=1008)
+            return
     await websocket.accept()
     state.active_websockets.append(websocket)
     try:

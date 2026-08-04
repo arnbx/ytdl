@@ -50,7 +50,7 @@ logging.basicConfig(
     format="[%(asctime)s] [%(levelname)s] [%(filename)s:%(lineno)d] - %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler(os.path.join(LOG_DIR, "aether_dl.log"), encoding="utf-8")
+        logging.FileHandler(os.path.join(LOG_DIR, "ytdl_test_merging.log"), encoding="utf-8")
     ]
 )
 logger = logging.getLogger("TestUniversalMergingConverting")
@@ -173,7 +173,7 @@ def run_test_workflow(wf_name: str, vid_ext: str, aud_ext: str, mode: str, expec
 
 def main():
     logger.info("=========================================================================")
-    logger.info("  AETHER DL -- UNIVERSAL MULTI-FORMAT MERGING & CONVERTING SUITE         ")
+    logger.info("  YTDL -- UNIVERSAL MULTI-FORMAT MERGING & CONVERTING SUITE              ")
     logger.info("=========================================================================")
 
     tests = [

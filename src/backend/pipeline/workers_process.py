@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import subprocess
 import threading
 from typing import List, Optional, Callable
@@ -28,24 +29,42 @@ def run_ffmpeg_with_progress(
     if not duration or duration <= 0:
         duration = 100.0
 
-    process = subprocess.Popen(
-        cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True,
-        bufsize=1
-    )
+    # Ensure non-interactive mode and machine-readable progress on stderr
+    if len(cmd) > 0 and not any(arg == "-nostdin" for arg in cmd):
+        cmd = [cmd[0], "-nostdin"] + cmd[1:]
+    if len(cmd) > 0 and not any(arg == "-progress" for arg in cmd):
+        cmd = [cmd[0], "-progress", "pipe:2"] + cmd[1:]
 
-    pattern = re.compile(r"time=(\d{2}):(\d{2}):(\d{2})")
+    popen_kwargs = {
+        "stdin": subprocess.DEVNULL,
+        "stdout": subprocess.DEVNULL,
+        "stderr": subprocess.PIPE,
+        "universal_newlines": True,
+        "bufsize": 1,
+    }
+    if sys.platform == "win32":
+        popen_kwargs["creationflags"] = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
+
+    process = subprocess.Popen(cmd, **popen_kwargs)
+
+    time_pattern = re.compile(r"(?:out_)?time=\s*(\d{2}):(\d{2}):(\d{2})")
+    ms_pattern = re.compile(r"out_time_ms=(\d+)")
     stderr_lines = []
 
     if process.stderr:
         for line in process.stderr:
             stderr_lines.append(line)
-            match = pattern.search(line)
-            if match:
-                h, m, s = map(int, match.groups())
-                current_sec = h * 3600 + m * 60 + s
+            current_sec = None
+            match_time = time_pattern.search(line)
+            if match_time:
+                h, m, s = map(int, match_time.groups())
+                current_sec = float(h * 3600 + m * 60 + s)
+            else:
+                match_ms = ms_pattern.search(line)
+                if match_ms:
+                    current_sec = float(match_ms.group(1)) / 1000000.0
+
+            if current_sec is not None:
                 percent = min(99.0, max(5.0, (current_sec / duration) * 100.0))
                 if stage_name == "MERGING":
                     job.merge_progress = percent / 100.0

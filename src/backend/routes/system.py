@@ -23,3 +23,17 @@ async def open_folder():
     except Exception as e:
         logger.error(f"Error opening folder {folder}: {e}")
         return {"success": False, "error": str(e)}
+
+@router.post("/api/open_url")
+async def open_url(data: dict):
+    url = data.get("url", "")
+    if url.startswith("http://") or url.startswith("https://"):
+        try:
+            import webbrowser
+            webbrowser.open(url)
+            return {"success": True}
+        except Exception as e:
+            logger.error(f"Error opening URL {url}: {e}")
+            return {"success": False, "error": str(e)}
+    return {"success": False, "error": "Invalid URL"}
+

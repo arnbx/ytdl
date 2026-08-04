@@ -1,0 +1,210 @@
+# YTDL By Arnab Bose
+
+<div align="center">
+
+**A Modern, High-Performance Native Desktop YouTube Video & Playlist Downloader Suite**
+
+[![GitHub](https://img.shields.io/badge/GitHub-developer--arnab--bose-24292e?style=for-the-badge&logo=github)](https://github.com/developer-arnab-bose/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PyWebView](https://img.shields.io/badge/PyWebView-5.0%2B-4B8BBE?style=for-the-badge)](https://pywebview.flowrl.com/)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**YTDL By Arnab Bose** is a state-of-the-art desktop YouTube downloader built with a high-performance **Python/FastAPI** backend and a sleek, responsive **glassmorphic vanilla HTML/CSS/JS** user interface rendered in a native desktop window via **PyWebView**.
+
+Unlike typical online downloaders or basic tools that limit downloads to **480p** or produce **muted videos** for higher resolutions, YTDL features a smart built-in processing engine. It seamlessly combines ultra-high-definition video with the highest-quality audio behind the scenes—delivering **true 4K/8K 60fps HDR video with master-quality 320kbps+ audio** into a universally playable `.mp4` file.
+
+---
+
+## ✨ Key Features
+
+- **🚀 Modular 4-Stage Download Pipeline**:
+  - **Stage 1 (Video Download)**: High-speed extraction of dedicated high-resolution video streams using `yt-dlp`.
+  - **Stage 2 (Audio Download)**: Concurrent or sequential download of the highest-bitrate audio streams.
+  - **Stage 3 (Muxing & Merging)**: Zero-loss stream multiplexing via bundled static **FFmpeg** (`imageio-ffmpeg`), requiring no system-level FFmpeg installation.
+  - **Stage 4 (Conversion & Finalization)**: Seamless container formatting into MP4, MP3, MKV, or audio-only formats.
+- **📑 Comprehensive Playlist & Batch Analysis**:
+  - Paste any playlist or channel URL to inspect full video lists asynchronously.
+  - **Live Progress Visualization**: Real-time progress bar smoothly tracks playlist metadata extraction from `0%` to `100%`.
+  - **Multi-Tier Resolution Selection**: Download entire playlists in uniform resolutions (4K 2160p, 1080p, 720p, Audio Only, or Best Available) or customize individual videos within a playlist.
+- **⚡ Real-Time WebSocket Telemetry**:
+  - Instantaneous updates for download speed, ETA, percentage complete, active queue counters, and stage status badges without polling overhead.
+- **🔒 Secure Native Desktop Execution**:
+  - Binds dynamically to an unused random loopback port (`127.0.0.1`) secured by a 128-bit cryptographic session token (`YTDL_APP_TOKEN`).
+  - Restricts access strictly to the native PyWebView application window—external web browsers are denied access.
+- **🧹 Automatic FIFO Log Manager**:
+  - Built-in `FIFOFileHandler` automatically monitors `logs/ytdl.log` and caps file size at **512 KB**.
+  - When logs exceed the threshold, older entries are safely pruned from the beginning of the file while retaining the most recent activity, preventing unbounded disk growth.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Backend**: Python 3.10+, FastAPI, Uvicorn, yt-dlp, imageio-ffmpeg
+- **GUI Engine**: PyWebView (WebKit2GTK on Linux, WebView2 on Windows, Cocoa on macOS)
+- **Frontend**: Vanilla HTML5, Modern CSS3 (Glassmorphism & HSL Dark Mode), ES6+ JavaScript, WebSockets
+- **Packaging**: PyInstaller (`ytdl.spec`)
+
+---
+
+## 🚀 Getting Started
+
+### 📦 1. Standard Installation (Recommended for Most Users)
+
+For a seamless, ready-to-use experience without installing Python or any system dependencies, download the pre-compiled native desktop application for your operating system directly from **[GitHub Releases](https://github.com/developer-arnab-bose/YtDownloader/releases)**:
+
+| Platform | File | Format | Instructions |
+| :--- | :--- | :--- | :--- |
+| **Linux** | `YTDL-linux-x86_64.AppImage` | Standalone AppImage | Download, grant execution permissions (`chmod +x YTDL-linux-x86_64.AppImage`), and double-click or run from terminal. |
+| **Windows** | `YTDL-windows-x86_64-setup.exe` | Windows Setup Installer | Download and run the setup wizard to install YTDL to your **Windows Start Menu** and **Program Files**. |
+| **macOS** | `YTDL-macos-arm64.dmg` | Drag-to-Applications Disk Image | 1. Download `YTDL-macos-arm64.dmg`, open it, and drag **YTDL.app** onto the **Applications** folder shortcut.<br>2. To allow the app to run without Gatekeeper warnings, open **Terminal** and run:<br>`xattr -dr com.apple.quarantine /Applications/YTDL.app`<br>3. Launch from Launchpad or Spotlight. |
+
+> [!IMPORTANT]
+> **macOS Gatekeeper Notice**: Because YTDL is distributed outside the Apple App Store without a paid Apple Developer certificate, macOS may display a *"YTDL.app is damaged and can't be opened"* warning on first launch. To clear the Apple quarantine attribute and run the app, open **Terminal** and execute:
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/YTDL.app
+> ```
+
+---
+
+### 💻 2. Advanced Installation (For Developers & Running from Source)
+
+If you prefer to run YTDL directly from the Python source code or contribute to development, follow the steps below:
+
+#### Prerequisites
+- **Python 3.10** or higher (Windows, macOS, or Linux)
+- System libraries for PyWebView (required **only on Linux/Debian/Ubuntu**):
+  ```bash
+  sudo apt update && sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1
+  ```
+
+#### Setup & Execution
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/developer-arnab-bose/YtDownloader.git
+   cd YtDownloader
+   ```
+
+2. **Create and activate a virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+4. **Launch the application**:
+   ```bash
+   python main.py
+   ```
+   The application will initialize its internal backend server, generate a secure session token, and open the YTDL native desktop window.
+
+---
+
+
+## 📁 Project Structure
+
+```text
+YtDownloader/
+├── main.py                          # Application entrypoint & PyWebView desktop window launcher
+├── requirements.txt                 # Project dependencies
+├── ytdl.spec                        # PyInstaller standalone packaging specification
+├── logs/
+│   └── ytdl.log                     # Auto-managed rolling FIFO log file (capped at 512 KB)
+├── downloads/                       # Default download directory for finished media & temp builds
+├── src/
+│   ├── logger.py                    # Custom FIFO log manager & formatting utilities
+│   ├── backend/
+│   │   ├── web_api.py               # FastAPI application, CORS, and startup hooks
+│   │   ├── state.py                 # Thread-safe global download & queue state management
+│   │   ├── websocket_manager.py     # Real-time WebSocket broadcasting for UI progress
+│   │   ├── ffmpeg_locator.py        # Static FFmpeg binary resolution (imageio-ffmpeg)
+│   │   ├── extractor/               # YouTube URL parsing & playlist metadata extraction
+│   │   ├── pipeline/                # Modular 4-stage download & conversion workers
+│   │   └── routes/                  # REST endpoints (/api/extract, /api/download, /api/queue, etc.)
+│   └── web/
+│       ├── index.html               # Main glassmorphic desktop interface
+│       ├── css/
+│       │   └── index.css            # Custom design system & animations
+│       └── js/                      # UI modules (WebSockets, Queue Dashboard, Playlist Tiers)
+└── test/                            # Comprehensive unit & integration test suite
+```
+
+---
+
+## 🧪 Running Automated Tests
+
+YTDL includes a comprehensive automated test suite covering HTML/DOM validation, REST API endpoints, playlist grouping logic, FIFO log truncation, and pipeline stages.
+
+To run all unit tests:
+
+```bash
+./venv/bin/python3 -m unittest discover -s test -v
+```
+
+---
+
+## 📦 Standalone Packaging & Native OS Installers
+
+You can build native desktop packages and installers for each operating system from source:
+
+### 1. 🪟 Windows (Start Menu Setup Installer)
+Requires [Inno Setup 6+](https://jrsoftware.org/isdl.php) installed on Windows.
+
+```powershell
+# 1. Generate icons & build executable bundle
+python scripts/generate_icons.py
+pyinstaller ytdl.spec --clean --noconfirm
+
+# 2. Compile Windows setup installer (creates YTDL-windows-x86_64-setup.exe)
+iscc ytdl_windows_installer.iss
+```
+
+### 2. 🍎 macOS (Drag-to-Applications Disk Image `.dmg`)
+Requires macOS (`hdiutil` is included natively in macOS).
+
+```bash
+# 1. Generate icons & build application bundle (dist/YTDL.app)
+python scripts/generate_icons.py
+pyinstaller ytdl.spec --clean --noconfirm
+
+# 2. Stage YTDL.app with an /Applications shortcut and build DMG
+mkdir -p dmg_stage
+cp -r dist/YTDL.app dmg_stage/
+ln -s /Applications dmg_stage/Applications
+hdiutil create -volname "YTDL" -srcfolder dmg_stage -ov -format UDZO YTDL-macos-arm64.dmg
+```
+
+### 3. 🐧 Linux (Standalone Executable / AppImage)
+Requires standard desktop GTK/WebKit2GTK libraries.
+
+```bash
+# 1. Generate icons & build standalone binary
+python scripts/generate_icons.py
+pyinstaller ytdl.spec --clean --noconfirm
+```
+---
+
+## 📜 License & Attribution
+
+- **Author**: Arnab Bose  
+- **GitHub**: [https://github.com/developer-arnab-bose/](https://github.com/developer-arnab-bose/)
+- **License**: **Proprietary No-Modification Attribution License** — See the [LICENSE](file:///home/arnab/Desktop/Developer/YtDownloader/LICENSE) file for full legal terms.
+
+### Key Licensing Permissions & Prohibitions:
+- **✅ Permitted (Commercial & Private Use)**: Anyone may install, run, and use the unmodified software for both private/personal and commercial/internal business purposes.
+- **🙏 Mandatory Attribution**: Any use of the software must give prominent credit and attribution to **Arnab Bose** and retain all existing author credits and GitHub links.
+- **🚫 Prohibited**:
+  - **No Modification**: Modifying, adapting, translating, reverse-engineering, or creating derivative works is strictly prohibited.
+  - **No Distribution**: Redistributing, selling, sublicensing, or making the software available as a public SaaS/hosted service is prohibited without express written authorization.
+  - **No Patent Use**: Using the software or its architecture to file, claim, or assert patent rights is strictly prohibited.
+
