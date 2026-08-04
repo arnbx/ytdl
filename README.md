@@ -56,7 +56,7 @@ Unlike typical online downloaders or basic tools that limit downloads to **480p*
 
 ### 📦 1. Standard Installation (Recommended for Most Users)
 
-For a seamless, ready-to-use experience without installing Python or any system dependencies, download the pre-compiled native desktop application for your operating system directly from **[GitHub Releases](https://github.com/developer-arnab-bose/YtDownloader/releases)**:
+For a seamless, ready-to-use experience without installing Python or any system dependencies, download the pre-compiled native desktop application for your operating system directly from **[GitHub Releases](https://github.com/developer-arnab-bose/ytdl/releases)**:
 
 | Platform | File | Format | Instructions |
 | :--- | :--- | :--- | :--- |
@@ -86,8 +86,8 @@ If you prefer to run YTDL directly from the Python source code or contribute to 
 #### Setup & Execution
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/developer-arnab-bose/YtDownloader.git
-   cd YtDownloader
+   git clone https://github.com/developer-arnab-bose/ytdl.git
+   cd ytdl
    ```
 
 2. **Create and activate a virtual environment**:
@@ -114,7 +114,7 @@ If you prefer to run YTDL directly from the Python source code or contribute to 
 ## 📁 Project Structure
 
 ```text
-YtDownloader/
+ytdl/
 ├── main.py                          # Application entrypoint & PyWebView desktop window launcher
 ├── requirements.txt                 # Project dependencies
 ├── ytdl.spec                        # PyInstaller standalone packaging specification
@@ -198,7 +198,7 @@ pyinstaller ytdl.spec --clean --noconfirm
 
 - **Author**: Arnab Bose  
 - **GitHub**: [https://github.com/developer-arnab-bose/](https://github.com/developer-arnab-bose/)
-- **License**: **Proprietary No-Modification Attribution License** — See the [LICENSE](file:///home/arnab/Desktop/Developer/YtDownloader/LICENSE) file for full legal terms.
+- **License**: **Proprietary No-Modification Attribution License** — See the [LICENSE](file:///home/arnab/Desktop/Developer/ytdl/LICENSE) file for full legal terms.
 
 ### Key Licensing Permissions & Prohibitions:
 - **✅ Permitted (Commercial & Private Use)**: Anyone may install, run, and use the unmodified software for both private/personal and commercial/internal business purposes.
