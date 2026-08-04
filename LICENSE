@@ -1,0 +1,52 @@
+YTDL BY ARNAB BOSE — PROPRIETARY NO-MODIFICATION ATTRIBUTION LICENSE
+Version 1.0, 2026
+
+Copyright (c) 2026 Arnab Bose (https://github.com/developer-arnab-bose/)
+All Rights Reserved.
+
+TERMS AND CONDITIONS FOR USE
+
+1. DEFINITIONS
+   "Software" refers to the YTDL YouTube Downloader Suite (including all source code, binaries, design elements, interfaces, documentation, and associated files) created and owned by Arnab Bose ("Licensor").
+   "User" or "You" refers to any individual or legal entity exercising permissions granted by this License.
+
+2. GRANT OF USE RIGHTS (COMMERCIAL & PRIVATE USE)
+   Subject to strictly complying with all terms, conditions, and restrictions set forth in this License, Licensor hereby grants You a limited, non-exclusive, non-transferable, revocable permission to install, run, and execute the unmodified Software for:
+   (a) Private and personal use; and
+   (b) Commercial and internal business use.
+
+3. MANDATORY ATTRIBUTION & CREDITS
+   Any use of the Software—whether in private, internal, educational, or commercial environments—MUST include prominent and legible attribution crediting "Arnab Bose" as the original creator and copyright holder of the Software. 
+   
+   When utilizing, presenting, or demonstrating the Software, You must:
+   (a) Retain all existing copyright notices, author credits ("YTDL By Arnab Bose"), and GitHub links (https://github.com/developer-arnab-bose/) present in the Software interface, source code, and documentation; and
+   (b) Give explicit credit to "Arnab Bose" in any accompanying documentation, publications, or public demonstrations referencing the Software.
+
+4. PROHIBITION OF MODIFICATION & DERIVATIVE WORKS
+   You are STRICTLY PROHIBITED from:
+   (a) Modifying, altering, editing, adapting, translating, or creating derivative works based upon the Software, in whole or in part;
+   (b) Reverse-engineering, decompiling, disassembling, or attempting to discover the source code or underlying algorithms of the Software, except to the extent expressly permitted by applicable mandatory law; and
+   (c) Removing, obscuring, altering, or circumventing any proprietary notices, author credits, labels, or security features in the Software.
+
+5. PROHIBITION OF DISTRIBUTION & SUBLICENSING
+   You are STRICTLY PROHIBITED from:
+   (a) Distributing, redistributing, publishing, sharing, or disseminating copies of the Software (in source code, binary, compiled, or packaged form) to any third party;
+   (b) Selling, reselling, renting, leasing, sublicensing, or commercially repackaging the Software; and
+   (c) Hosting, bundling, or making the Software available as a public hosted service or SaaS without prior explicit written permission from Arnab Bose.
+
+6. EXCLUSION OF PATENT RIGHTS (NO PATENT USE)
+   No patent rights, patent immunity, or patent license of any kind are granted, implied, or conferred by this License. You are STRICTLY PROHIBITED from:
+   (a) Using the Software, its architecture, or its methods to apply for, claim, register, or assert any patent rights; and
+   (b) Asserting or threatening any patent infringement lawsuit or claim against Arnab Bose or any authorized users of the Software.
+
+7. RESERVATION OF RIGHTS & OWNERSHIP
+   All title, ownership, copyright, intellectual property rights, and proprietary rights in and to the Software remain exclusively vested in Arnab Bose. This License does not convey any ownership interest in the Software.
+
+8. DISCLAIMER OF WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL ARNAB BOSE BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+9. TERMINATION
+   Any failure to comply with the mandatory attribution requirements, prohibitions against modification, distribution restrictions, or patent terms of this License shall automatically and immediately terminate all rights granted to You under this License without notice.
+
+-------------------------------------------------------------------------------
+For custom licensing inquiries, distribution permissions, or commercial exceptions, contact Arnab Bose via https://github.com/developer-arnab-bose/
