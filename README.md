@@ -147,16 +147,45 @@ To run all unit tests:
 
 ---
 
-## 📦 Standalone Packaging
+## 📦 Standalone Packaging & Native OS Installers
 
-To build a standalone redistributable executable using **PyInstaller**:
+You can build native desktop packages and installers for each operating system from source:
 
-```bash
-./venv/bin/pyinstaller ytdl.spec
+### 1. 🪟 Windows (Start Menu Setup Installer)
+Requires [Inno Setup 6+](https://jrsoftware.org/isdl.php) installed on Windows.
+
+```powershell
+# 1. Generate icons & build executable bundle
+python scripts/generate_icons.py
+pyinstaller ytdl.spec --clean --noconfirm
+
+# 2. Compile Windows setup installer (creates YTDL-windows-x86_64-setup.exe)
+iscc ytdl_windows_installer.iss
 ```
 
-The compiled application bundle will be output to the `dist/` directory.
+### 2. 🍎 macOS (Drag-to-Applications Disk Image `.dmg`)
+Requires macOS (`hdiutil` is included natively in macOS).
 
+```bash
+# 1. Generate icons & build application bundle (dist/YTDL.app)
+python scripts/generate_icons.py
+pyinstaller ytdl.spec --clean --noconfirm
+
+# 2. Stage YTDL.app with an /Applications shortcut and build DMG
+mkdir -p dmg_stage
+cp -r dist/YTDL.app dmg_stage/
+ln -s /Applications dmg_stage/Applications
+hdiutil create -volname "YTDL" -srcfolder dmg_stage -ov -format UDZO YTDL-macos-arm64.dmg
+```
+
+### 3. 🐧 Linux (Standalone Executable / AppImage)
+Requires standard desktop GTK/WebKit2GTK libraries.
+
+```bash
+# 1. Generate icons & build standalone binary
+python scripts/generate_icons.py
+pyinstaller ytdl.spec --clean --noconfirm
+```
 ---
 
 ## 📜 License & Attribution
