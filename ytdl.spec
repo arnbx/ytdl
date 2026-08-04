@@ -55,10 +55,26 @@ datas = [
 ]
 
 # ─── Analysis ─────────────────────────────────────────────────────────────────
-base_excludes = ["tkinter", "test", "_tkinter"]
-if not IS_WINDOWS and not IS_MAC:
-    # On Linux, exclude Qt bindings so pywebview exclusively uses GTK/WebKit2GTK
-    base_excludes.extend(["PyQt5", "PyQt6", "PySide2", "PySide6", "qtpy"])
+base_excludes = [
+    "tkinter",
+    "test",
+    "_tkinter",
+    "PyQt5",
+    "PyQt6",
+    "PySide2",
+    "PySide6",
+    "qtpy",
+    "matplotlib",
+    "numpy",
+    "scipy",
+    "pandas",
+    "notebook",
+    "IPython",
+    "docutils",
+    "sphinx",
+    "pytest",
+    "unittest",
+]
 
 a = Analysis(
     ["main.py"],

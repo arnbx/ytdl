@@ -177,22 +177,12 @@ jobs:
           Write-Host "Built: YTDL-windows-x86_64-setup.exe"
           Get-Item YTDL-windows-x86_64-setup.exe | Select-Object Name, Length
 
-      # ── Package as single executable (Portable) ──────────────────────
-      - name: Package Windows EXE (Portable)
-        shell: pwsh
-        run: |
-          Copy-Item dist\YTDL.exe YTDL-windows-x86_64.exe
-          Write-Host "Built: YTDL-windows-x86_64.exe"
-          Get-Item YTDL-windows-x86_64.exe | Select-Object Name, Length
-
       # ── Upload artifact ──────────────────────────────────────────────
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
         with:
           name: YTDL-windows-x86_64
-          path: |
-            YTDL-windows-x86_64-setup.exe
-            YTDL-windows-x86_64.exe
+          path: YTDL-windows-x86_64-setup.exe
           retention-days: 7
 
 
@@ -308,7 +298,6 @@ jobs:
             |---|---|---|
             | Linux (x86_64) | `YTDL-linux-x86_64.AppImage` | Standalone AppImage (executable binary) |
             | Windows (x86_64) | `YTDL-windows-x86_64-setup.exe` | Windows Setup Installer (Start Menu & Apps integration) |
-            | Windows (x86_64) | `YTDL-windows-x86_64.exe` | Standalone portable executable (`.exe`), Windows 10/11 |
             | macOS (Apple Silicon) | `YTDL-macos-arm64.dmg` | Drag-to-Applications Disk Image (`YTDL.app -> Applications`) |
 
 
