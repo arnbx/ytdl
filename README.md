@@ -17,7 +17,7 @@
 
 **YTDL By Arnab Bose** is a state-of-the-art desktop YouTube downloader built with a high-performance **Python/FastAPI** backend and a sleek, responsive **glassmorphic vanilla HTML/CSS/JS** user interface rendered in a native desktop window via **PyWebView**.
 
-Designed for speed, reliability, and precision, YTDL handles everything from individual 8K Dolby Vision videos to 100+ video educational playlists with granular control over formats, resolutions, and stream multiplexing.
+Unlike typical online downloaders or basic tools that limit downloads to 720p/1080p or produce **muted videos** for higher resolutions, YTDL features an automated FFmpeg multiplexing engine. It seamlessly downloads separate raw DASH video and audio streams and merges them behind the scenes—delivering **true 4K/8K 60fps HDR video with master-quality 320kbps+ audio** into a universally playable `.mp4` file.
 
 ---
 
