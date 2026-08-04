@@ -61,8 +61,8 @@ For a seamless, ready-to-use experience without installing Python or any system 
 | Platform | File | Format | Instructions |
 | :--- | :--- | :--- | :--- |
 | **Linux** | `YTDL-linux-x86_64.AppImage` | Standalone AppImage | Download, grant execution permissions (`chmod +x YTDL-linux-x86_64.AppImage`), and double-click or run from terminal. |
-| **Windows** | `YTDL-windows-x86_64.exe` | Standalone Executable (`.exe`) | Download `YTDL-windows-x86_64.exe` and double-click to launch directly. No extraction required! |
-| **macOS** | `YTDL-macos-arm64.dmg` | Application Bundle (`.app` / `.dmg`) | Download `YTDL-macos-arm64.dmg`, drag **YTDL.app** to your **Applications** folder, and open. |
+| **Windows** | `YTDL-windows-x86_64-setup.exe` | Windows Setup Installer | Download and run the setup wizard to install YTDL to your **Windows Start Menu** and **Program Files**. (A standalone portable `YTDL-windows-x86_64.exe` is also available). |
+| **macOS** | `YTDL-macos-arm64.dmg` | Drag-to-Applications Disk Image | Download `YTDL-macos-arm64.dmg`, open it, drag **YTDL.app** onto the **Applications** folder shortcut, and launch from Launchpad or Spotlight. |
 
 ---
 

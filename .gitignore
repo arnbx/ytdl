@@ -26,12 +26,15 @@ Downloads/ytdl/
 build/
 dist/
 YTDL.AppDir/
+dmg_stage/
 release-assets/
 *.AppImage
 *.dmg
 *.exe
+*-setup.exe
 *.pkg
 *.spec.bak
+*.iss.bak
 
 # Log files
 logs/

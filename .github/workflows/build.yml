@@ -169,8 +169,16 @@ jobs:
       - name: Verify build bundle & test execution
         run: python scripts/test_build.py
 
-      # ── Package as single executable ────────────────────────────────
-      - name: Package Windows EXE
+      # ── Compile Windows Setup Installer (Inno Setup) ─────────────────
+      - name: Compile Windows Installer (Inno Setup)
+        shell: pwsh
+        run: |
+          iscc ytdl_windows_installer.iss
+          Write-Host "Built: YTDL-windows-x86_64-setup.exe"
+          Get-Item YTDL-windows-x86_64-setup.exe | Select-Object Name, Length
+
+      # ── Package as single executable (Portable) ──────────────────────
+      - name: Package Windows EXE (Portable)
         shell: pwsh
         run: |
           Copy-Item dist\YTDL.exe YTDL-windows-x86_64.exe
@@ -182,7 +190,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: YTDL-windows-x86_64
-          path: YTDL-windows-x86_64.exe
+          path: |
+            YTDL-windows-x86_64-setup.exe
+            YTDL-windows-x86_64.exe
           retention-days: 7
 
 
@@ -230,13 +240,16 @@ jobs:
       - name: Verify build bundle & test execution
         run: python scripts/test_build.py
 
-      # ── Package as DMG ────────────────────────────────────────────────
-      - name: Create DMG
+      # ── Package as Drag-to-Applications DMG ──────────────────────────
+      - name: Create Drag-to-Applications DMG
         run: |
-          # Create a simple DMG using hdiutil (built into macOS)
+          # Stage YTDL.app and an Applications symlink for drag-and-drop installation
+          mkdir -p dmg_stage
+          cp -r dist/YTDL.app dmg_stage/
+          ln -s /Applications dmg_stage/Applications
           hdiutil create \
             -volname "YTDL" \
-            -srcfolder dist/YTDL.app \
+            -srcfolder dmg_stage \
             -ov \
             -format UDZO \
             YTDL-macos-arm64.dmg
@@ -294,8 +307,9 @@ jobs:
             | Platform | File | Notes |
             |---|---|---|
             | Linux (x86_64) | `YTDL-linux-x86_64.AppImage` | Standalone AppImage (executable binary) |
-            | Windows (x86_64) | `YTDL-windows-x86_64.exe` | Standalone executable (`.exe`), Windows 10/11 |
-            | macOS (Apple Silicon) | `YTDL-macos-arm64.dmg` | M1/M2/M3/M4, macOS 12+ (`YTDL.app`) |
+            | Windows (x86_64) | `YTDL-windows-x86_64-setup.exe` | Windows Setup Installer (Start Menu & Apps integration) |
+            | Windows (x86_64) | `YTDL-windows-x86_64.exe` | Standalone portable executable (`.exe`), Windows 10/11 |
+            | macOS (Apple Silicon) | `YTDL-macos-arm64.dmg` | Drag-to-Applications Disk Image (`YTDL.app -> Applications`) |
 
 
             > **Intel Mac users:** The arm64 DMG runs on Intel Macs via macOS Rosetta 2 (enabled by default on macOS 11+). No separate Intel build is provided as GitHub no longer offers Intel macOS runners.
