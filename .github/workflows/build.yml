@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       # ── System dependencies for PyWebView (WebKit2GTK) ──────────────
       - name: Install system WebKit2GTK & GObject dependencies
@@ -43,7 +43,7 @@ jobs:
 
       # ── Python setup ─────────────────────────────────────────────────
       - name: Set up Python 3.12
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
@@ -114,7 +114,7 @@ jobs:
 
       # ── Upload artifact for use in release job ───────────────────────
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4.6
+        uses: actions/upload-artifact@v4
         with:
           name: YTDL-linux-x86_64
           path: YTDL-linux-x86_64.AppImage
@@ -130,11 +130,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       # ── Python setup ─────────────────────────────────────────────────
       - name: Set up Python 3.12
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
@@ -171,7 +171,7 @@ jobs:
 
       # ── Upload artifact ──────────────────────────────────────────────
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4.6
+        uses: actions/upload-artifact@v4
         with:
           name: YTDL-windows-x86_64
           path: YTDL-windows-x86_64.exe
@@ -187,11 +187,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       # ── Python setup ─────────────────────────────────────────────────
       - name: Set up Python 3.12
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
@@ -233,7 +233,7 @@ jobs:
 
       # ── Upload artifact ──────────────────────────────────────────────
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4.6
+        uses: actions/upload-artifact@v4
         with:
           name: YTDL-macos-arm64
           path: YTDL-macos-arm64.dmg
@@ -251,7 +251,7 @@ jobs:
 
     steps:
       - name: Download all build artifacts
-        uses: actions/download-artifact@v4.1
+        uses: actions/download-artifact@v4
         with:
           path: release-assets/
 
