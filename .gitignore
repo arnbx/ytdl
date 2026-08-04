@@ -15,6 +15,8 @@ venv.bak/
 
 # Project Specific Output, Media, and Downloads
 downloads/
+ytdl/
+Downloads/ytdl/
 .temp_build/
 *.part
 *.ytdl

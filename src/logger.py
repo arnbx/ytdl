@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 
 class FIFOFileHandler(logging.FileHandler):
@@ -59,21 +60,23 @@ def get_logger(name: str = "YTDL") -> logging.Logger:
 
     logger.setLevel(logging.DEBUG)
 
-    # Ensure ./logs directory exists
-    logs_dir = os.path.abspath("logs")
-    os.makedirs(logs_dir, exist_ok=True)
-    log_file = os.path.join(logs_dir, "ytdl.log")
-
     formatter = logging.Formatter(
         "[%(asctime)s] [%(levelname)s] [%(name)s.%(funcName)s:%(lineno)d] - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
 
-    # File Handler with FIFO Log Manager (keeps size capped under max_bytes)
-    fh = FIFOFileHandler(log_file, max_bytes=512 * 1024, keep_ratio=0.6, mode="a", encoding="utf-8")
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    # Do not create logs directory or store log files when running as a packaged app
+    if not getattr(sys, "frozen", False):
+        # Ensure ./logs directory exists
+        logs_dir = os.path.abspath("logs")
+        os.makedirs(logs_dir, exist_ok=True)
+        log_file = os.path.join(logs_dir, "ytdl.log")
+
+        # File Handler with FIFO Log Manager (keeps size capped under max_bytes)
+        fh = FIFOFileHandler(log_file, max_bytes=512 * 1024, keep_ratio=0.6, mode="a", encoding="utf-8")
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
 
     # Console Handler
     ch = logging.StreamHandler()

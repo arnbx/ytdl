@@ -73,10 +73,10 @@ def test_sorting_and_grouping():
     print(f"       -> PASS: Mode 'video_only' grouping works: {groups_vo[0].group_name}")
 
 def test_target_directories():
-    print("[TEST] 3. Testing strict ./downloads/ target directories...")
+    print("[TEST] 3. Testing strict ~/Downloads/ytdl target directories...")
     logger.info("Running automated test: test_target_directories")
     std_dir = get_target_directory(None)
-    assert std_dir.endswith("downloads"), f"Expected base downloads folder, got {std_dir}"
+    assert std_dir.endswith("ytdl") and "Downloads" in std_dir, f"Expected base ~/Downloads/ytdl folder, got {std_dir}"
     assert os.path.exists(std_dir)
 
     pl_dir = get_target_directory("My Test Playlist")
