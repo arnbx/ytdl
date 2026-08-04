@@ -58,25 +58,66 @@ jobs:
       - name: Run test suite
         run: python -m unittest discover -s test -p "test_html_dom.py" -v
 
+      # ── Generate application icons (.ico / .icns) ───────────────────
+      - name: Generate multi-platform icons
+        run: python scripts/generate_icons.py
+
+      # ── Compile Python source to compiled bytecode binaries ─────────
+      - name: Compile Python source to bytecode (.pyc)
+        run: python -m compileall -b src/ main.py
+
       # ── Build with PyInstaller ───────────────────────────────────────
       - name: Build with PyInstaller
         run: pyinstaller ytdl.spec --clean --noconfirm
 
-      # ── Package as tar.gz ────────────────────────────────────────────
-      - name: Package dist folder
+      # ── Package as standalone AppImage ───────────────────────────────
+      - name: Build standalone AppImage
         run: |
-          cd dist
-          tar -czf ../YTDL-linux-x86_64.tar.gz YTDL/
-          cd ..
-          echo "Built: YTDL-linux-x86_64.tar.gz"
-          ls -lh YTDL-linux-x86_64.tar.gz
+          mkdir -p YTDL.AppDir/usr/bin
+          cp -r dist/YTDL/* YTDL.AppDir/usr/bin/
+          
+          # Create AppRun script
+          cat << 'EOF' > YTDL.AppDir/AppRun
+          #!/bin/bash
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          export PATH="${HERE}/usr/bin:${PATH}"
+          export LD_LIBRARY_PATH="${HERE}/usr/bin:${LD_LIBRARY_PATH}"
+          exec "${HERE}/usr/bin/YTDL" "$@"
+          EOF
+          chmod +x YTDL.AppDir/AppRun
+          
+          # Create .desktop file
+          cat << 'EOF' > YTDL.AppDir/YTDL.desktop
+          [Desktop Entry]
+          Name=YTDL
+          Exec=YTDL
+          Icon=ytdl
+          Type=Application
+          Categories=AudioVideo;Network;
+          Comment=High Quality YouTube Video Downloader
+          EOF
+          
+          # Copy application icon for AppImage specification
+          mkdir -p YTDL.AppDir/usr/share/icons/hicolor/256x256/apps
+          cp icon/icon-256.png YTDL.AppDir/ytdl.png
+          cp icon/icon-256.png YTDL.AppDir/usr/share/icons/hicolor/256x256/apps/ytdl.png
+          cp icon/icon-256.png YTDL.AppDir/.DirIcon
+
+          # Download appimagetool and create AppImage
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+          ARCH=x86_64 ./appimagetool-x86_64.AppImage --appimage-extract-and-run YTDL.AppDir YTDL-linux-x86_64.AppImage
+          chmod +x YTDL-linux-x86_64.AppImage
+          echo "Built: YTDL-linux-x86_64.AppImage"
+          ls -lh YTDL-linux-x86_64.AppImage
 
       # ── Upload artifact for use in release job ───────────────────────
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4.6
         with:
           name: YTDL-linux-x86_64
-          path: YTDL-linux-x86_64.tar.gz
+          path: YTDL-linux-x86_64.AppImage
           retention-days: 7
 
 
@@ -108,24 +149,32 @@ jobs:
       - name: Run test suite
         run: python -m unittest discover -s test -p "test_html_dom.py" -v
 
+      # ── Generate application icons (.ico / .icns) ───────────────────
+      - name: Generate multi-platform icons
+        run: python scripts/generate_icons.py
+
+      # ── Compile Python source to compiled bytecode binaries ─────────
+      - name: Compile Python source to bytecode (.pyc)
+        run: python -m compileall -b src/ main.py
+
       # ── Build with PyInstaller ───────────────────────────────────────
       - name: Build with PyInstaller
         run: pyinstaller ytdl.spec --clean --noconfirm
 
-      # ── Package as zip ───────────────────────────────────────────────
-      - name: Package dist folder
+      # ── Package as single executable ────────────────────────────────
+      - name: Package Windows EXE
         shell: pwsh
         run: |
-          Compress-Archive -Path dist\YTDL\* -DestinationPath YTDL-windows-x86_64.zip
-          Write-Host "Built: YTDL-windows-x86_64.zip"
-          Get-Item YTDL-windows-x86_64.zip | Select-Object Name, Length
+          Copy-Item dist\YTDL.exe YTDL-windows-x86_64.exe
+          Write-Host "Built: YTDL-windows-x86_64.exe"
+          Get-Item YTDL-windows-x86_64.exe | Select-Object Name, Length
 
       # ── Upload artifact ──────────────────────────────────────────────
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4.6
         with:
           name: YTDL-windows-x86_64
-          path: YTDL-windows-x86_64.zip
+          path: YTDL-windows-x86_64.exe
           retention-days: 7
 
 
@@ -156,6 +205,14 @@ jobs:
       # ── Run unit tests before building ──────────────────────────────
       - name: Run test suite
         run: python -m unittest discover -s test -p "test_html_dom.py" -v
+
+      # ── Generate application icons (.ico / .icns) ───────────────────
+      - name: Generate multi-platform icons
+        run: python scripts/generate_icons.py
+
+      # ── Compile Python source to compiled bytecode binaries ─────────
+      - name: Compile Python source to bytecode (.pyc)
+        run: python -m compileall -b src/ main.py
 
       # ── Build with PyInstaller ───────────────────────────────────────
       - name: Build with PyInstaller
@@ -224,27 +281,18 @@ jobs:
 
             | Platform | File | Notes |
             |---|---|---|
-            | Linux (x86_64) | `YTDL-linux-x86_64.tar.gz` | Requires `libwebkit2gtk-4.0` — see below |
-            | Windows (x86_64) | `YTDL-windows-x86_64.zip` | Windows 10/11, WebView2 built-in |
-            | macOS (Apple Silicon) | `YTDL-macos-arm64.dmg` | M1/M2/M3/M4, macOS 12+ |
+            | Linux (x86_64) | `YTDL-linux-x86_64.AppImage` | Standalone AppImage (executable binary) |
+            | Windows (x86_64) | `YTDL-windows-x86_64.exe` | Standalone executable (`.exe`), Windows 10/11 |
+            | macOS (Apple Silicon) | `YTDL-macos-arm64.dmg` | M1/M2/M3/M4, macOS 12+ (`YTDL.app`) |
+
 
             > **Intel Mac users:** The arm64 DMG runs on Intel Macs via macOS Rosetta 2 (enabled by default on macOS 11+). No separate Intel build is provided as GitHub no longer offers Intel macOS runners.
 
             ### Linux Installation
-            Install the one required system dependency before running:
+            Ensure system WebKit2GTK is installed (standard on most desktop Linux distributions), then make the AppImage executable and run:
             ```bash
-            # Ubuntu/Debian
-            sudo apt install libwebkit2gtk-4.0-dev
-
-            # Arch Linux
-            sudo pacman -S webkit2gtk
-
-            # Fedora/RedHat
-            sudo dnf install webkit2gtk3
-
-            # Then extract and run:
-            tar -xzf YTDL-linux-x86_64.tar.gz
-            ./YTDL/YTDL
+            chmod +x YTDL-linux-x86_64.AppImage
+            ./YTDL-linux-x86_64.AppImage
             ```
 
             ### SHA256 Checksums
@@ -257,3 +305,4 @@ jobs:
             SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

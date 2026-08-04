@@ -70,36 +70,60 @@ a = Analysis(
 
 pyz = PYZ(a.pure)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    [],
-    exclude_binaries=True,
-    name="YTDL",
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    console=False,       # No terminal window for end users
-    icon=None,           # Replace with icon path e.g. "assets/icon.ico" (Win) / "assets/icon.icns" (Mac)
-)
+win_icon = "icon/icon.ico" if os.path.exists("icon/icon.ico") else None
+mac_icon = "icon/icon.icns" if os.path.exists("icon/icon.icns") else None
+linux_icon = "icon/icon-256.png" if os.path.exists("icon/icon-256.png") else None
 
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name="YTDL",
-)
+if IS_WINDOWS:
+    # Build single standalone executable (.exe) for Windows
+    exe = EXE(
+        pyz,
+        a.scripts,
+        a.binaries,
+        a.datas,
+        [],
+        name="YTDL",
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        runtime_tmpdir=None,
+        console=False,       # No terminal window for end users
+        icon=win_icon,       # Uses icon/icon.ico for Windows
+    )
+else:
+    # Build directory bundle for Linux AppImage and macOS .app / .dmg
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name="YTDL",
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        console=False,
+        icon=linux_icon,     # Uses icon/icon-256.png for Linux
+    )
+
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.datas,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        name="YTDL",
+    )
 
 # ─── macOS .app bundle ────────────────────────────────────────────────────────
 if IS_MAC:
     app = BUNDLE(
         coll,
         name="YTDL.app",
-        icon=None,           # Replace with "assets/icon.icns" when available
+        icon=mac_icon,       # Uses icon/icon.icns for macOS .app
         bundle_identifier="com.ytdl.downloader",
         info_plist={
             "NSHighResolutionCapable": True,
@@ -107,3 +131,4 @@ if IS_MAC:
             "CFBundleShortVersionString": "1.0.0",
         },
     )
+

@@ -58,11 +58,11 @@ Designed for speed, reliability, and precision, YTDL handles everything from ind
 
 For a seamless, ready-to-use experience without installing Python or any system dependencies, download the pre-compiled native desktop application for your operating system directly from **[GitHub Releases](https://github.com/developer-arnab-bose/YtDownloader/releases)**:
 
-| Platform | Format | Instructions |
-| :--- | :--- | :--- |
-| **Windows** | Portable Executable / Installer (`.exe`) | Download `YTDL-Windows.exe`, double-click to launch the native desktop app. |
-| **macOS** | Application Bundle (`.app` / `.dmg`) | Download `YTDL-macOS.dmg`, drag to **Applications**, and launch. |
-| **Linux** | Standalone Binary / AppImage | Download `YTDL-Linux`, grant execution permissions (`chmod +x YTDL-Linux`), and run. |
+| Platform | File | Format | Instructions |
+| :--- | :--- | :--- | :--- |
+| **Linux** | `YTDL-linux-x86_64.AppImage` | Standalone AppImage | Download, grant execution permissions (`chmod +x YTDL-linux-x86_64.AppImage`), and double-click or run from terminal. |
+| **Windows** | `YTDL-windows-x86_64.exe` | Standalone Executable (`.exe`) | Download `YTDL-windows-x86_64.exe` and double-click to launch directly. No extraction required! |
+| **macOS** | `YTDL-macos-arm64.dmg` | Application Bundle (`.app` / `.dmg`) | Download `YTDL-macos-arm64.dmg`, drag **YTDL.app** to your **Applications** folder, and open. |
 
 ---
 
