@@ -20,6 +20,17 @@ downloads/
 *.ytdl
 *.temp
 
+# PyInstaller & Cross-Platform Packaging Artifacts
+build/
+dist/
+YTDL.AppDir/
+release-assets/
+*.AppImage
+*.dmg
+*.exe
+*.pkg
+*.spec.bak
+
 # Log files
 logs/
 *.log

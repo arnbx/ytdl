@@ -55,6 +55,11 @@ datas = [
 ]
 
 # ─── Analysis ─────────────────────────────────────────────────────────────────
+base_excludes = ["tkinter", "test", "_tkinter"]
+if not IS_WINDOWS and not IS_MAC:
+    # On Linux, exclude Qt bindings so pywebview exclusively uses GTK/WebKit2GTK
+    base_excludes.extend(["PyQt5", "PyQt6", "PySide2", "PySide6", "qtpy"])
+
 a = Analysis(
     ["main.py"],
     pathex=["."],
@@ -64,9 +69,44 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=["tkinter", "test", "_tkinter"],
+    excludes=base_excludes,
     noarchive=False,
 )
+
+# On Linux, exclude host system libraries (glib, gobject, gio, girepository, gtk, webkit, cairo, pango, etc.)
+# from a.binaries so they load dynamically from the host OS without symbol clash errors.
+if not IS_WINDOWS and not IS_MAC:
+    linux_sys_prefixes = (
+        "libglib-2.0",
+        "libgobject-2.0",
+        "libgio-2.0",
+        "libgmodule-2.0",
+        "libgthread-2.0",
+        "libgirepository-1.0",
+        "libgtk-3",
+        "libgdk-3",
+        "libwebkit2gtk",
+        "libjavascriptcoregtk",
+        "libcairo",
+        "libpango",
+        "libffi",
+        "libwayland",
+        "libX",
+        "libdrm",
+        "libgbm",
+        "libEGL",
+        "libGL",
+        "libGLES",
+        "libxcb",
+        "libxkbcommon",
+        "libdbus",
+        "libfontconfig",
+        "libfreetype",
+    )
+    a.binaries = [
+        b for b in a.binaries
+        if not b[0].startswith(linux_sys_prefixes) and not any(f"/{p}" in b[1] for p in linux_sys_prefixes)
+    ]
 
 pyz = PYZ(a.pure)
 

@@ -27,6 +27,17 @@ def start_server(port: int):
 
 def main():
     logger.info("Starting YTDL YouTube Downloader Suite (Webview Edition)...")
+    if "--check-build" in sys.argv or "--test-build" in sys.argv:
+        logger.info("Running build verification check...")
+        import yt_dlp
+        import fastapi
+        import uvicorn
+        from src.backend import web_api, models, state
+        from src.backend.extractor import extract_video_metadata
+        logger.info("All core dependencies and modules imported successfully.")
+        logger.info("Build verification successful! Exiting cleanly with code 0.")
+        sys.exit(0)
+
     try:
         # Generate secret session token to restrict access strictly to the native GUI window
         app_token = secrets.token_hex(16)

@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # ── System dependencies for PyWebView (WebKit2GTK) ──────────────
       - name: Install system WebKit2GTK & GObject dependencies
@@ -43,7 +43,7 @@ jobs:
 
       # ── Python setup ─────────────────────────────────────────────────
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -69,6 +69,10 @@ jobs:
       # ── Build with PyInstaller ───────────────────────────────────────
       - name: Build with PyInstaller
         run: pyinstaller ytdl.spec --clean --noconfirm
+
+      # ── Verify build bundle & test execution ─────────────────────────
+      - name: Verify build bundle & test execution
+        run: python scripts/test_build.py
 
       # ── Package as standalone AppImage ───────────────────────────────
       - name: Build standalone AppImage
@@ -114,7 +118,7 @@ jobs:
 
       # ── Upload artifact for use in release job ───────────────────────
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: YTDL-linux-x86_64
           path: YTDL-linux-x86_64.AppImage
@@ -130,11 +134,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # ── Python setup ─────────────────────────────────────────────────
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -161,6 +165,10 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller ytdl.spec --clean --noconfirm
 
+      # ── Verify build bundle & test execution ─────────────────────────
+      - name: Verify build bundle & test execution
+        run: python scripts/test_build.py
+
       # ── Package as single executable ────────────────────────────────
       - name: Package Windows EXE
         shell: pwsh
@@ -171,7 +179,7 @@ jobs:
 
       # ── Upload artifact ──────────────────────────────────────────────
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: YTDL-windows-x86_64
           path: YTDL-windows-x86_64.exe
@@ -187,11 +195,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # ── Python setup ─────────────────────────────────────────────────
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: "pip"
@@ -218,6 +226,10 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller ytdl.spec --clean --noconfirm
 
+      # ── Verify build bundle & test execution ─────────────────────────
+      - name: Verify build bundle & test execution
+        run: python scripts/test_build.py
+
       # ── Package as DMG ────────────────────────────────────────────────
       - name: Create DMG
         run: |
@@ -233,7 +245,7 @@ jobs:
 
       # ── Upload artifact ──────────────────────────────────────────────
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: YTDL-macos-arm64
           path: YTDL-macos-arm64.dmg
@@ -251,7 +263,7 @@ jobs:
 
     steps:
       - name: Download all build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: release-assets/
 
