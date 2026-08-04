@@ -147,6 +147,7 @@ if IS_WINDOWS:
         runtime_tmpdir=None,
         console=False,       # No terminal window for end users
         icon=win_icon,       # Uses icon/icon.ico for Windows
+        version="version_info.txt" if os.path.exists("version_info.txt") else None,
     )
 else:
     # Build directory bundle for Linux AppImage and macOS .app / .dmg
@@ -180,11 +181,15 @@ if IS_MAC:
         coll,
         name="YTDL.app",
         icon=mac_icon,       # Uses icon/icon.icns for macOS .app
-        bundle_identifier="com.ytdl.downloader",
+        bundle_identifier="dev.arnabbose.ytdl",
         info_plist={
             "NSHighResolutionCapable": True,
-            "NSHumanReadableCopyright": "YTDL",
+            "NSHumanReadableCopyright": "Copyright © 2026 Arnab Bose. All rights reserved.",
             "CFBundleShortVersionString": "1.0.0",
+            "CFBundleGetInfoString": "YTDL by Arnab Bose",
+            "CFBundleName": "YTDL",
+            "CFBundleDisplayName": "YTDL",
+            "CFBundleIdentifier": "dev.arnabbose.ytdl",
         },
     )
 

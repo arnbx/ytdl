@@ -3,7 +3,7 @@
 
 #define MyAppName "YTDL"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "YTDL Team"
+#define MyAppPublisher "Arnab Bose"
 #define MyAppURL "https://github.com/developer-arnab-bose/YtDownloader"
 #define MyAppExeName "YTDL.exe"
 

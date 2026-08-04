@@ -99,7 +99,9 @@ jobs:
           Icon=ytdl
           Type=Application
           Categories=AudioVideo;Network;
-          Comment=High Quality YouTube Video Downloader
+          Comment=High Quality YouTube Video Downloader by Arnab Bose
+          Author=Arnab Bose
+          X-AppImage-Author=Arnab Bose
           EOF
           
           # Copy application icon for AppImage specification
